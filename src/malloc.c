@@ -44,7 +44,7 @@ void printStatistics( void )
   printf("max heap:\t%d\n", max_heap );
 }
 
-struct _block 
+struct _block
 {
    size_t  size;         /* Size of the allocated _block of memory in bytes */
    struct _block *prev;  /* Pointer to the previous _block of allcated memory   */
@@ -60,7 +60,7 @@ struct _block *heapList = NULL; /* Free list to track the _blocks available */
  * \brief findFreeBlock
  *
  * \param last pointer to the linked list of free _blocks
- * \param size size of the _block needed in bytes 
+ * \param size size of the _block needed in bytes
  *
  * \return a _block that fits the request or NULL if no free _block matches
  *
@@ -68,13 +68,13 @@ struct _block *heapList = NULL; /* Free list to track the _blocks available */
  * \TODO Implement Best Fit
  * \TODO Implement Worst Fit
  */
-struct _block *findFreeBlock(struct _block **last, size_t size) 
+struct _block *findFreeBlock(struct _block **last, size_t size)
 {
    struct _block *curr = heapList;
 
 #if defined FIT && FIT == 0
    /* First fit */
-   while (curr && !(curr->free && curr->size >= size)) 
+   while (curr && !(curr->free && curr->size >= size))
    {
       *last = curr;
       curr  = curr->next;
@@ -82,15 +82,27 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
 #endif
 
 #if defined BEST && BEST == 0
+   /* Best fit */
    printf("TODO: Implement best fit here\n");
+
+
+
 #endif
 
 #if defined WORST && WORST == 0
+   /* Worst fit */
    printf("TODO: Implement worst fit here\n");
+
+
+
 #endif
 
 #if defined NEXT && NEXT == 0
+   /* Next fit */
    printf("TODO: Implement next fit here\n");
+
+
+   
 #endif
 
    return curr;
@@ -99,7 +111,7 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
 /*
  * \brief growheap
  *
- * Given a requested size of memory, use sbrk() to dynamically 
+ * Given a requested size of memory, use sbrk() to dynamically
  * increase the data segment of the calling process.  Updates
  * the free list with the newly allocated memory.
  *
@@ -108,7 +120,7 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
  *
  * \return returns the newly allocated _block of NULL if failed
  */
-struct _block *growHeap(struct _block *last, size_t size) 
+struct _block *growHeap(struct _block *last, size_t size)
 {
    /* Request more space from OS */
    struct _block *curr = (struct _block *)sbrk(0);
@@ -117,19 +129,19 @@ struct _block *growHeap(struct _block *last, size_t size)
    assert(curr == prev);
 
    /* OS allocation failed */
-   if (curr == (struct _block *)-1) 
+   if (curr == (struct _block *)-1)
    {
       return NULL;
    }
 
    /* Update heapList if not set */
-   if (heapList == NULL) 
+   if (heapList == NULL)
    {
       heapList = curr;
    }
 
    /* Attach new _block to prev _block */
-   if (last) 
+   if (last)
    {
       last->next = curr;
    }
@@ -145,15 +157,15 @@ struct _block *growHeap(struct _block *last, size_t size)
  * \brief malloc
  *
  * finds a free _block of heap memory for the calling process.
- * if there is no free _block that satisfies the request then grows the 
+ * if there is no free _block that satisfies the request then grows the
  * heap and returns a new _block
  *
  * \param size size of the requested memory in bytes
  *
- * \return returns the requested memory allocation to the calling process 
+ * \return returns the requested memory allocation to the calling process
  * or NULL if failed
  */
-void *malloc(size_t size) 
+void *malloc(size_t size)
 {
 
    if( atexit_registered == 0 )
@@ -166,7 +178,7 @@ void *malloc(size_t size)
    size = ALIGN4(size);
 
    /* Handle 0 size */
-   if (size == 0) 
+   if (size == 0)
    {
       return NULL;
    }
@@ -178,17 +190,17 @@ void *malloc(size_t size)
    /* TODO: Split free _block if possible */
 
    /* Could not find free _block, so grow heap */
-   if (next == NULL) 
+   if (next == NULL)
    {
       next = growHeap(last, size);
    }
 
    /* Could not find free _block or grow heap, so just return NULL */
-   if (next == NULL) 
+   if (next == NULL)
    {
       return NULL;
    }
-   
+
    /* Mark _block as in use */
    next->free = false;
 
@@ -206,9 +218,9 @@ void *malloc(size_t size)
  *
  * \return none
  */
-void free(void *ptr) 
+void free(void *ptr)
 {
-   if (ptr == NULL) 
+   if (ptr == NULL)
    {
       return;
    }
