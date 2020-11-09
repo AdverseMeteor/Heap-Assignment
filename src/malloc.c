@@ -65,7 +65,7 @@ struct _block *heapList = NULL; /* Free list to track the _blocks available */
  *
  * \return a _block that fits the request or NULL if no free _block matches
  *
- * \TODO Implement Next Fit
+ * \TODO Implement Next Fit--------------------------------------------------------------------------
  * \TODO Implement Best Fit
  * \TODO Implement Worst Fit
  */
