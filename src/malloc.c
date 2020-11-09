@@ -196,7 +196,7 @@ struct _block *growHeap(struct _block *last, size_t size)
  */
 void *malloc(size_t size)
 {
-
+   num_mallocs++;
    if( atexit_registered == 0 )
    {
       atexit_registered = 1;
@@ -217,11 +217,14 @@ void *malloc(size_t size)
    struct _block *next = findFreeBlock(&last, size);
 
    /* TODO: Split free _block if possible --------------------------------------------------------------------------*/
+   //num_splits++;
+
 
    /* Could not find free _block, so grow heap */
    if (next == NULL)
    {
       next = growHeap(last, size);
+      num_grows++;
    }
 
    /* Could not find free _block or grow heap, so just return NULL */
@@ -249,6 +252,7 @@ void *malloc(size_t size)
  */
 void free(void *ptr)
 {
+   num_frees++;
    if (ptr == NULL)
    {
       return;
@@ -264,6 +268,7 @@ void free(void *ptr)
 
    curr->next = cur->next->next;
    curr->size = curr->next->size + sizeof(struct _block);
+   num_coalesces++;
    */
 }
 
