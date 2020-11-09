@@ -154,6 +154,7 @@ struct _block *growHeap(struct _block *last, size_t size)
    /* Request more space from OS */
    struct _block *curr = (struct _block *)sbrk(0);
    struct _block *prev = (struct _block *)sbrk(sizeof(struct _block) + size);
+   num_requested++;
 
    assert(curr == prev);
 
