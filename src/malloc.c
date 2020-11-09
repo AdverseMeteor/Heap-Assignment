@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #define ALIGN4(s)         (((((s) - 1) >> 2) << 2) + 4)
 #define BLOCK_DATA(b)      ((b) + 1)
@@ -77,32 +78,60 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
    while (curr && !(curr->free && curr->size >= size))
    {
       *last = curr;
-      curr  = curr->next;
+      curr = curr->next;
    }
 #endif
 
 #if defined BEST && BEST == 0
    /* Best fit */
-   printf("TODO: Implement best fit here\n");
-
-
-
+   size_t diff = INT_MAX;
+   struct _block* bull = NULL;
+   while(curr)
+   {
+     *last = curr;
+     if(curr->free && curr->size > size)
+     {
+       if((curr->size - size) < diff)
+       {
+         diff = curr->size - size;
+         bull = curr;
+       }
+     }
+     curr = curr->next;
+   }
+   if(bull)
+   {
+     curr = bull;
+   }
 #endif
 
 #if defined WORST && WORST == 0
    /* Worst fit */
-   printf("TODO: Implement worst fit here\n");
-
-
-
+   size_t diff = INT_MIN;
+   struct _block* bull = NULL;
+   while(curr)
+   {
+     *last = curr;
+     if(curr->free == true && curr->size >= size)
+     {
+       size_t new_diff = (curr->size) - size;
+       if(new_diff >=0 && new_diff > diff)
+       {
+         diff = new_diff;
+         bull = curr;
+       }
+     }
+      curr = curr->next;
+   }
+   if(bull)
+   {
+     curr = bull;
+   }
 #endif
 
 #if defined NEXT && NEXT == 0
    /* Next fit */
    printf("TODO: Implement next fit here\n");
-
-
-   
 #endif
 
    return curr;
@@ -187,7 +216,7 @@ void *malloc(size_t size)
    struct _block *last = heapList;
    struct _block *next = findFreeBlock(&last, size);
 
-   /* TODO: Split free _block if possible */
+   /* TODO: Split free _block if possible --------------------------------------------------------------------------*/
 
    /* Could not find free _block, so grow heap */
    if (next == NULL)
@@ -230,7 +259,12 @@ void free(void *ptr)
    assert(curr->free == 0);
    curr->free = true;
 
-   /* TODO: Coalesce free _blocks if needed */
+   /* TODO: Coalesce free _blocks if needed -------------------------------------------------
+
+
+   curr->next = cur->next->next;
+   curr->size = curr->next->size + sizeof(struct _block);
+   */
 }
 
 /* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: --------------------------------*/
