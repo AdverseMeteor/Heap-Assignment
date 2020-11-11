@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <stdint.h>
 
 #define ALIGN4(s)         (((((s) - 1) >> 2) << 2) + 4)
 #define BLOCK_DATA(b)      ((b) + 1)
@@ -131,7 +132,17 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
 
 #if defined NEXT && NEXT == 0
    /* Next fit */
-   printf("TODO: Implement next fit here\n");
+   if(*last != NULL)
+   {
+     curr = *last;
+     curr = curr->next;
+   }
+
+   while(curr && !(curr->free && curr->size >= size))
+   {
+     *last = curr;
+     curr = curr->next;
+   }
 #endif
 
    return curr;
@@ -154,7 +165,6 @@ struct _block *growHeap(struct _block *last, size_t size)
    /* Request more space from OS */
    struct _block *curr = (struct _block *)sbrk(0);
    struct _block *prev = (struct _block *)sbrk(sizeof(struct _block) + size);
-   num_requested++;
 
    assert(curr == prev);
 
@@ -216,10 +226,26 @@ void *malloc(size_t size)
    /* Look for free _block */
    struct _block *last = heapList;
    struct _block *next = findFreeBlock(&last, size);
+   num_requested+=size;
 
    /* TODO: Split free _block if possible --------------------------------------------------------------------------*/
-   //num_splits++;
+   if(next != NULL)
+    {
+      num_reuses++;
+      if((next->size - size) > sizeof(struct _block))
+      {
+        num_splits++;
+        int old_size = next->size;
+        struct _block* oldnext = next->next;
 
+        uint8_t* ptr = (uint8_t*) next;
+        next->next = (struct _block*)(ptr + size + sizeof(struct _block));
+        next->next->free = 1;
+        next->next->size = old_size - size - sizeof(struct _block);
+
+        next->next->next = oldnext;
+      }
+    }
 
    /* Could not find free _block, so grow heap */
    if (next == NULL)
@@ -253,7 +279,7 @@ void *malloc(size_t size)
  */
 void free(void *ptr)
 {
-   num_frees++;
+
    if (ptr == NULL)
    {
       return;
@@ -263,14 +289,42 @@ void free(void *ptr)
    struct _block *curr = BLOCK_HEADER(ptr);
    assert(curr->free == 0);
    curr->free = true;
+   num_frees++;
+   /* TODO: Coalesce free _blocks if needed -------------------------------------------------*/
 
-   /* TODO: Coalesce free _blocks if needed -------------------------------------------------
+   while(curr && curr->next)
+   {
+     if(curr->free && curr->next->free )
+     {
+       num_coalesces++;
+       curr->size = curr->size + curr->next->size + sizeof(struct _block);
 
+       if(curr->next->next)
+       {
+         curr->next = curr->next->next;
+       }
 
-   curr->next = cur->next->next;
-   curr->size = curr->next->size + sizeof(struct _block);
-   num_coalesces++;
-   */
+       else
+       {
+         curr->next = NULL;
+       }
+     }
+     curr = curr->next;
+   }
+
+}
+
+void *realloc(void *ptr, size_t size)
+{
+  if(size == 0)
+  {
+    free(ptr);
+  }
+}
+
+void *calloc(size_t nmemb, size_t size)
+{
+
 }
 
 /* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: --------------------------------*/
