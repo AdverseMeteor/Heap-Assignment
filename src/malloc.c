@@ -252,6 +252,7 @@ void *malloc(size_t size)
    {
       next = growHeap(last, size);
       num_grows++;
+      max_heap+=size;
    }
 
    /* Could not find free _block or grow heap, so just return NULL */
@@ -314,7 +315,7 @@ void free(void *ptr)
 
 }
 
-void *realloc(void *ptr, size_t size)
+/*void *realloc(void *ptr, size_t size)
 {
   if(size == 0)
   {
@@ -326,5 +327,5 @@ void *calloc(size_t nmemb, size_t size)
 {
 
 }
-
+*/
 /* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: --------------------------------*/
