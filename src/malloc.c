@@ -300,31 +300,25 @@ void free(void *ptr)
    num_frees++;
    /* TODO: Coalesce free _blocks if needed -------------------------------------------------*/
 
-   struct _block * iterator = heapList;
-   while(iterator!=NULL)
+   while(curr && curr->next)
    {
-     if(!iterator->free)
-     {
-       iterator=iterator->next;
-       continue;
-     }
-
-     struct _block* holder = iterator;
-     size_t value = 0;
-
-     while(holder->next && holder->next->free)
-     {
-       holder = holder->next;
-       value +=holder->size;
-     }
-     if(holder!=iterator)
+     if(curr->free && curr->next->free )
      {
        num_coalesces++;
        num_blocks--;
+       curr->size = curr->size + curr->next->size + sizeof(struct _block);
+
+       if(curr->next->next)
+       {
+         curr->next = curr->next->next;
+       }
+
+       else
+       {
+         curr->next = NULL;
+       }
      }
-     iterator->size+=value;
-     iterator->next = holder->next;
-     iterator = iterator->next;
+     curr = curr->next;
    }
 
 }
