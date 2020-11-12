@@ -251,10 +251,9 @@ void *malloc(size_t size)
    /* Could not find free _block, so grow heap */
    if (next == NULL)
    {
-      max_heap+=size;
       next = growHeap(last, size);
       num_grows++;
-
+      max_heap+=size;
    }
 
    /* Could not find free _block or grow heap, so just return NULL */
