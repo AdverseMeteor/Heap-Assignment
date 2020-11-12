@@ -253,7 +253,7 @@ void *malloc(size_t size)
    {
       next = growHeap(last, size);
       num_grows++;
-      max_heap+=size;
+      max_heap+=next->size;
       num_blocks++;
    }
 
@@ -300,25 +300,31 @@ void free(void *ptr)
    num_frees++;
    /* TODO: Coalesce free _blocks if needed -------------------------------------------------*/
 
-   while(curr && curr->next)
+   struct _block * iterator = heapList;
+   while(iterator!=NULL)
    {
-     if(curr->free && curr->next->free )
+     if(!iterator->free)
+     {
+       iterator=iterator->next;
+       continue;
+     }
+
+     struct _block* holder = iterator;
+     size_t value = 0;
+
+     while(holder->next && holder->next->free)
+     {
+       holder = holder->next;
+       value +=holder->size;
+     }
+     if(holder!=iterator)
      {
        num_coalesces++;
        num_blocks--;
-       curr->size = curr->size + curr->next->size + sizeof(struct _block);
-
-       if(curr->next->next)
-       {
-         curr->next = curr->next->next;
-       }
-
-       else
-       {
-         curr->next = NULL;
-       }
      }
-     curr = curr->next;
+     iterator->size+=value;
+     iterator->next = holder->next;
+     iterator = iterator->next;
    }
 
 }
