@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <stdint.h>
+#include <string.h>
 
 #define ALIGN4(s)         (((((s) - 1) >> 2) << 2) + 4)
 #define BLOCK_DATA(b)      ((b) + 1)
@@ -315,17 +316,20 @@ void free(void *ptr)
 
 }
 
-/*void *realloc(void *ptr, size_t size)
+void *realloc(void *ptr, size_t size)
 {
-  if(size == 0)
-  {
-    free(ptr);
-  }
+  void *n_ptr;
+  n_ptr = malloc(size);
+  memcpy(ptr, n_ptr, size);
+
+  return n_ptr;
 }
 
 void *calloc(size_t nmemb, size_t size)
 {
-
+  void *ptr = malloc(nmemb * size);
+  memset(ptr, 0 , nmemb * size);
+  return ptr;
 }
-*/
+
 /* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: --------------------------------*/
