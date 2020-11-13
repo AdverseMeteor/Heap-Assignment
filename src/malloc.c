@@ -289,7 +289,6 @@ void *malloc(size_t size)
  */
 void free(void *ptr)
 {
-
    if (ptr == NULL)
    {
       return;
@@ -300,6 +299,7 @@ void free(void *ptr)
    assert(curr->free == 0);
    curr->free = true;
    num_frees++;
+   num_blocks--;
    /* TODO: Coalesce free _blocks if needed -------------------------------------------------*/
 
    while(curr && curr->next)
