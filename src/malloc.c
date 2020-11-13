@@ -258,15 +258,16 @@ void *malloc(size_t size)
       num_blocks++;
       max_heap+=size;
    }
-   else
-   {
-     num_reuses++;
-   }
+
 
    /* Could not find free _block or grow heap, so just return NULL */
    if (next == NULL)
    {
       return NULL;
+   }
+   else
+   {
+     num_reuses++;
    }
 
    /* Mark _block as in use */
