@@ -225,9 +225,10 @@ void *malloc(size_t size)
    }
 
    /* Look for free _block */
+   num_requested+=size;
    struct _block *last = heapList;
    struct _block *next = findFreeBlock(&last, size);
-   num_requested+=size;
+
 
    /* TODO: Split free _block if possible --------------------------------------------------------------------------*/
    if(next != NULL)
