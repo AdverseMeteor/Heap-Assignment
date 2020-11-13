@@ -234,6 +234,7 @@ void *malloc(size_t size)
    /* TODO: Split free _block if possible --------------------------------------------------------------------------*/
    if(next != NULL)
     {
+      num_reuses++;
       if((next->size - size) > sizeof(struct _block))
       {
         num_splits++;
@@ -253,16 +254,11 @@ void *malloc(size_t size)
    /* Could not find free _block, so grow heap */
    if (next == NULL)
    {
-      num_reuses++;
-
       next = growHeap(last, size);
       num_grows++;
+      num_blocks++;
       max_heap+=size;
 
-   }
-   else
-   {
-     num_blocks++;
    }
 
    /* Could not find free _block or grow heap, so just return NULL */
