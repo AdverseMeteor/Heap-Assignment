@@ -87,7 +87,7 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
 #if defined BEST && BEST == 0
    /* Best fit */
    size_t diff = INT_MAX;
-   struct _block* bull = NULL;
+   struct _block* b_block = NULL;
    while(curr)
    {
      *last = curr;
@@ -96,21 +96,21 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
        if((curr->size - size) < diff)
        {
          diff = curr->size - size;
-         bull = curr;
+         b_block = curr;
        }
      }
      curr = curr->next;
    }
-   if(bull)
+   if(b_block)
    {
-     curr = bull;
+     curr = b_block;
    }
 #endif
 
 #if defined WORST && WORST == 0
    /* Worst fit */
    size_t diff = INT_MIN;
-   struct _block* bull = NULL;
+   struct _block* w_block = NULL;
    while(curr)
    {
      *last = curr;
@@ -120,14 +120,14 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
        if(new_diff >=0 && new_diff > diff)
        {
          diff = new_diff;
-         bull = curr;
+         w_block = curr;
        }
      }
       curr = curr->next;
    }
-   if(bull)
+   if(w_block)
    {
-     curr = bull;
+     curr = w_block;
    }
 #endif
 
