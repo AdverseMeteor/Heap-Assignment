@@ -209,7 +209,7 @@ struct _block *growHeap(struct _block *last, size_t size)
 void *malloc(size_t size)
 {
    num_mallocs++;
-   num_requested+=size;
+   num_requested=size;
    if( atexit_registered == 0 )
    {
       atexit_registered = 1;
