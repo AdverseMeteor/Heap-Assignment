@@ -253,7 +253,7 @@ void *malloc(size_t size)
    {
       next = growHeap(last, size);
       num_grows++;
-      max_heap+=next->size;
+      max_heap+=size;
       num_blocks++;
    }
 
