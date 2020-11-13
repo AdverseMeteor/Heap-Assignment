@@ -253,7 +253,8 @@ void *malloc(size_t size)
    /* Could not find free _block, so grow heap */
    if (next == NULL)
    {
-      num_blocks++;
+      num_reuses++;
+
       next = growHeap(last, size);
       num_grows++;
       max_heap+=size;
@@ -261,7 +262,7 @@ void *malloc(size_t size)
    }
    else
    {
-     num_reuses++;
+     num_blocks++;
    }
 
    /* Could not find free _block or grow heap, so just return NULL */
@@ -299,7 +300,6 @@ void free(void *ptr)
    assert(curr->free == 0);
    curr->free = true;
    num_frees++;
-   num_blocks--;
    /* TODO: Coalesce free _blocks if needed -------------------------------------------------*/
 
    while(curr && curr->next)
