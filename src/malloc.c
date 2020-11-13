@@ -209,6 +209,7 @@ struct _block *growHeap(struct _block *last, size_t size)
 void *malloc(size_t size)
 {
    num_mallocs++;
+   num_requested+=size;
    if( atexit_registered == 0 )
    {
       atexit_registered = 1;
@@ -225,7 +226,7 @@ void *malloc(size_t size)
    }
 
    /* Look for free _block */
-   num_requested+=size;
+
    struct _block *last = heapList;
    struct _block *next = findFreeBlock(&last, size);
 
