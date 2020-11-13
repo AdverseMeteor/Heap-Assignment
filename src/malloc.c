@@ -256,7 +256,7 @@ void *malloc(size_t size)
       num_blocks++;
       next = growHeap(last, size);
       num_grows++;
-      max_heap+=(size+sizeof(struct _block));
+      max_heap+=size;
 
    }
    else
